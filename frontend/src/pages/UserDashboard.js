@@ -24,12 +24,19 @@ export default function UserDashboard() {
 
   const formatDate = d => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  const stats = {
-    total: applications.length,
-    pending: applications.filter(a => a.status === 'pending').length,
-    shortlisted: applications.filter(a => a.status === 'shortlisted').length,
-    reviewing: applications.filter(a => a.status === 'reviewing').length,
-  };
+  const safeApplications =
+  Array.isArray(applications)
+    ? applications
+    : Array.isArray(applications?.applications)
+    ? applications.applications
+    : [];
+
+const stats = {
+  total: safeApplications.length,
+  pending: safeApplications.filter(a => a.status === 'pending').length,
+  shortlisted: safeApplications.filter(a => a.status === 'shortlisted').length,
+  reviewing: safeApplications.filter(a => a.status === 'reviewing').length,
+};
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', backgroundColor: '#f7f6f3' }}>
@@ -97,7 +104,7 @@ export default function UserDashboard() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            {applications.map(app => (
+            {safeApplications.map(app => (
               <div key={app._id} style={{ backgroundColor: '#fff', border: '1px solid #e8e5df', borderRadius: '12px', padding: '1.3rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', cursor: 'pointer' }} onClick={() => navigate(`/jobs/${app.job?._id}`)}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.25rem' }}>

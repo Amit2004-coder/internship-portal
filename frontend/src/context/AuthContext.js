@@ -7,29 +7,51 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Load user + token on refresh
   useEffect(() => {
-    const saved = localStorage.getItem('ip_user');
-    if (saved) {
-      const u = JSON.parse(saved);
-      setUser(u);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${u.token}`;
+    const savedUser = localStorage.getItem('ip_user');
+    const token = localStorage.getItem('token');
+
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
     }
+
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+
     setLoading(false);
   }, []);
 
+  // ✅ LOGIN FIXED
   const login = (data) => {
-    setUser(data);
-    localStorage.setItem('ip_user', JSON.stringify(data));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    const userData = data.user || data;
+
+    setUser(userData);
+
+    // store user
+    localStorage.setItem('ip_user', JSON.stringify(userData));
+
+    // IMPORTANT: store token separately
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    }
   };
 
+  // ✅ LOGOUT FIXED
   const logout = () => {
     setUser(null);
     localStorage.removeItem('ip_user');
+    localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
   };
 
-  return <Ctx.Provider value={{ user, login, logout, loading }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={{ user, login, logout, loading }}>
+      {children}
+    </Ctx.Provider>
+  );
 };
 
 export const useAuth = () => useContext(Ctx);
