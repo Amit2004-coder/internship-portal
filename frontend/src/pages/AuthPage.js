@@ -1,3 +1,4 @@
+import API from '../config';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -37,12 +38,18 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+      const endpoint = mode === 'login'
+  ? `${API}/api/auth/login`
+  : `${API}/api/auth/register`;
       const payload = mode === 'login'
         ? { email: form.email, password: form.password }
         : { role, ...form, skills: selectedSkills };
 
-      const { data } = await axios.post(endpoint, payload);
+      const { data } = await axios.post(endpoint, payload, {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
       login(data);
       toast.success(mode === 'login' ? `Welcome back, ${data.name}! 👋` : `Account created! Welcome, ${data.name}! 🎉`);
       navigate(data.role === 'hr' ? '/hr/dashboard' : '/dashboard');
