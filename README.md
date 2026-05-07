@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🎓 InternHub — Full Stack Internship Portal
 
 ## Kya hai ye?
@@ -81,3 +82,6 @@ npm start   # runs on http://localhost:3000
 | GET | /api/applications/job/:jobId | HR only |
 | PATCH | /api/applications/:id/status | HR only |
 | GET | /api/applications/check/:jobId | User only |
+=======
+# internship-portal
+>>>>>>> d8280ccd427df2e2b4881c95334ed7bd6f1393d1
