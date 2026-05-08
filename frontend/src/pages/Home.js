@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../api';
 import JobCard from '../components/JobCard';
 
 const SKILL_SUGGESTIONS = ['React', 'Node.js', 'Python', 'Java', 'Flutter', 'Machine Learning', 'UI/UX', 'AWS', 'SQL', 'MongoDB'];
@@ -20,7 +20,11 @@ export default function Home() {
       if (skill) params.skill = skill;
       if (type !== 'all') params.type = type;
 
-      const { data } = await axios.get('/api/jobs', { params });
+      const { data } = await api.get('/api/jobs', { params });
+
+console.log("FETCHED JOBS 👉", data);
+
+setJobs(Array.isArray(data) ? data : []);
 
       // ✅ FIX (important): ensure always array
       if (Array.isArray(data)) {
