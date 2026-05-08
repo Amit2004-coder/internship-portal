@@ -31,20 +31,65 @@ export default function HRDashboard() {
   useEffect(() => { fetchMyJobs(); }, []);
 
   const fetchMyJobs = async () => {
-    try {
-      const { data } = await axios.get('/api/jobs/hr/my-jobs');
-      setMyJobs(data);
-    } catch { toast.error('Failed to load jobs'); }
-  };
+  try {
+    const savedUser = JSON.parse(localStorage.getItem('ip_user'));
+    const token = savedUser?.token;
 
-  const fetchApplications = async (job) => {
-    setSelectedJob(job);
-    setTab('applications');
-    try {
-      const { data } = await axios.get(`/api/applications/job/${job._id}`);
-      setApplications(data);
-    } catch { toast.error('Failed to load applications'); }
-  };
+    const { data } = await axios.get('/api/jobs/hr/my-jobs', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log("MY JOBS 👉", data);
+
+    // SAFE ARRAY FIX
+    const safeJobs = Array.isArray(data)
+      ? data
+      : data.jobs || [];
+
+    setMyJobs(safeJobs);
+
+  } catch (err) {
+    console.log("JOBS ERROR 👉", err.response?.data || err.message);
+
+    setMyJobs([]);
+
+    toast.error('Failed to load jobs');
+  }
+};
+
+const fetchApplications = async (job) => {
+  setSelectedJob(job);
+  setTab('applications');
+
+  try {
+    const savedUser = JSON.parse(localStorage.getItem('ip_user'));
+    const token = savedUser?.token;
+
+    const { data } = await axios.get(`/api/applications/job/${job._id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log("APPLICATIONS 👉", data);
+
+    // SAFE ARRAY FIX
+    const safeApplications = Array.isArray(data)
+      ? data
+      : data.applications || [];
+
+    setApplications(safeApplications);
+
+  } catch (err) {
+    console.log("APPLICATION ERROR 👉", err.response?.data || err.message);
+
+    setApplications([]);
+
+    toast.error('Failed to load applications');
+  }
+};
 
   const toggleSkill = s => setSkills(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]);
 
@@ -294,7 +339,7 @@ export default function HRDashboard() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                {applications.map(app => (
+                {(Array.isArray(applications) ? applications : []).map(app => (
                   <div key={app._id} style={{ backgroundColor: '#fff', border: '1px solid #e8e5df', borderRadius: '12px', padding: '1.4rem', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                       <div style={{ flex: 1 }}>
