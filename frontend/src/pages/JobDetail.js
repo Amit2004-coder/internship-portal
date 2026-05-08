@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,9 +25,9 @@ export default function JobDetail() {
   const ALL_SKILLS = ['JavaScript','React','Node.js','Python','Java','C++','Flutter','UI/UX Design','Machine Learning','SQL','MongoDB','AWS','Git','TypeScript','Figma'];
 
   useEffect(() => {
-    axios.get(`/api/jobs/${id}`).then(r => { setJob(r.data); setLoading(false); }).catch(() => setLoading(false));
+    api.get(`/api/jobs/${id}`).then(r => { setJob(r.data); setLoading(false); }).catch(() => setLoading(false));
     if (user?.role === 'user') {
-      axios.get(`/api/applications/check/${id}`).then(r => {
+      api.get(`/api/applications/check/${id}`).then(r => {
         setApplied(r.data.applied);
         setMyApp(r.data.application);
         if (r.data.applied && user) {
@@ -49,7 +49,7 @@ export default function JobDetail() {
     if (!form.resumeUrl) { toast.error('Resume URL is required'); return; }
     setApplyLoading(true);
     try {
-      await axios.post('/api/applications', { jobId: id, ...form });
+      await api.post('/api/applications', { jobId: id, ...form });
       setApplied(true);
       setApplyOpen(false);
       toast.success('Application submitted! 🎉');
