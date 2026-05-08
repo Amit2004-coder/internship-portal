@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,7 +17,7 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/api/applications/my')
+    api.get('/api/applications/my')
       .then(r => { setApplications(r.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);

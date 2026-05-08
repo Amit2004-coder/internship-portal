@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,7 +35,7 @@ export default function HRDashboard() {
     const savedUser = JSON.parse(localStorage.getItem('ip_user'));
     const token = savedUser?.token;
 
-    const { data } = await axios.get('/api/jobs/hr/my-jobs', {
+    const { data } = await api.get('/api/jobs/hr/my-jobs', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -67,7 +67,7 @@ const fetchApplications = async (job) => {
     const savedUser = JSON.parse(localStorage.getItem('ip_user'));
     const token = savedUser?.token;
 
-    const { data } = await axios.get(`/api/applications/job/${job._id}`, {
+    const { data } = await api.get(`/api/applications/job/${job._id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -107,10 +107,10 @@ const fetchApplications = async (job) => {
         deadline: form.deadline || undefined,
       };
       if (editJob) {
-        await axios.put(`/api/jobs/${editJob._id}`, payload);
+        await api.put(`/api/jobs/${editJob._id}`, payload);
         toast.success('Job updated!');
       } else {
-        await axios.post('/api/jobs', payload);
+        await api.post('/api/jobs', payload);
         toast.success('Job posted! 🎉');
       }
       setForm({ ...emptyJob, company: user?.company || '' });
@@ -142,7 +142,7 @@ const fetchApplications = async (job) => {
 
   const handleDelete = async (jobId) => {
     try {
-      await axios.delete(`/api/jobs/${jobId}`);
+      await api.delete(`/api/jobs/${jobId}`);
       toast.success('Job deleted');
       setShowDeleteConfirm(null);
       fetchMyJobs();
@@ -151,7 +151,7 @@ const fetchApplications = async (job) => {
 
   const updateStatus = async (appId, status) => {
     try {
-      const { data } = await axios.patch(`/api/applications/${appId}/status`, { status });
+      const { data } = await api.patch(`/api/applications/${appId}/status`, { status });
       setApplications(p => p.map(a => a._id === appId ? { ...a, status: data.status } : a));
       toast.success(`Marked as ${status}`);
     } catch { toast.error('Update failed'); }

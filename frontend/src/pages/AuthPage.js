@@ -1,7 +1,7 @@
 import API from '../config';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
@@ -45,7 +45,7 @@ export default function AuthPage() {
         ? { email: form.email, password: form.password }
         : { role, ...form, skills: selectedSkills };
 
-      const { data } = await axios.post(endpoint, payload, {
+      const { data } = await api.post(endpoint, payload, {
   headers: {
     'Content-Type': 'application/json'
   }
